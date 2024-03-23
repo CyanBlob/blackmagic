@@ -263,6 +263,7 @@ bool msp432e4_probe(target_s *const target)
 /* Erase from addr for length bytes */
 static bool msp432e4_flash_erase(target_flash_s *const target_flash, const target_addr_t addr, const size_t length)
 {
+
 	(void)length;
 	target_s *const target = target_flash->t;
 	const msp432e4_flash_s *const flash = (msp432e4_flash_s *)target_flash;

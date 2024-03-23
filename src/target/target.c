@@ -542,14 +542,24 @@ uint32_t target_mem_read32(target_s *t, uint32_t addr)
 {
 	uint32_t result = 0;
 	if (t->mem_read)
+{
 		t->mem_read(t, &result, addr, sizeof(result));
+
+		if (result != 0) {
+			//DEBUG_WARN("Read %d bytes from 0x%" PRIx32 ". Value: 0x%" PRIx32 "\n", sizeof(result), addr, result);
+		}
+
+}
 	return result;
 }
 
 void target_mem_write32(target_s *t, uint32_t addr, uint32_t value)
 {
 	if (t->mem_write)
+	{
+		//DEBUG_WARN("Writing %d bytes to 0x%" PRIx32 ". Value: 0x%" PRIx32 "\n", sizeof(value), addr, value);
 		t->mem_write(t, addr, &value, sizeof(value));
+	}
 }
 
 uint16_t target_mem_read16(target_s *t, uint32_t addr)

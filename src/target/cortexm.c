@@ -570,7 +570,6 @@ bool cortexm_probe(adiv5_access_port_s *ap)
 		PROBE(imxrt_probe);
 		PROBE(kinetis_probe);
 		PROBE(s32k3xx_probe);
-		PROBE(ke04_probe);
 		break;
 	case JEP106_MANUFACTURER_GIGADEVICE:
 		PROBE(gd32f1_probe);
@@ -607,6 +606,8 @@ bool cortexm_probe(adiv5_access_port_s *ap)
 		break;
 	case JEP106_MANUFACTURER_TEXAS:
 		PROBE(msp432p4_probe);
+		DEBUG_WARN("CHECKING: 0x%x 0x%x\n", target->designer_code, target->part_id);
+		PROBE(mspm0g3507_probe);
 		break;
 	case JEP106_MANUFACTURER_SPECULAR:
 		PROBE(lpc11xx_probe); /* LPC845 */
