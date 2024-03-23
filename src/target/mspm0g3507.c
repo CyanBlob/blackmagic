@@ -38,29 +38,29 @@
 #define MSPM0G3507_FLASH_CTRL_BASE 0x400fd000U
 #define MSPM0G3507_SYS_CTRL_BASE   0x400fe000U
 
-#define MSPM0G3507_FLASH_BASE 0x00000000U
-#define MSPM0G3507_SRAM_BASE  0x20000000U
-#define MSPM0G3507_PERIPH_BASE  0x400CD000U
+#define MSPM0G3507_FLASH_BASE  0x00000000U
+#define MSPM0G3507_SRAM_BASE   0x20000000U
+#define MSPM0G3507_PERIPH_BASE 0x400CD000U
 
 #define MSPM0G3507_CPUID 0xE000ED00U
 
-#define MSPM0G3507_CMD_TYPE_BASE MSPM0G3507_PERIPH_BASE + 0x1104U
-#define MSPM0G3507_CMD_TYPE_COMMAND_NOOP 0x0U
-#define MSPM0G3507_CMD_TYPE_COMMAND_PROGRAM 0x1U
-#define MSPM0G3507_CMD_TYPE_COMMAND_ERASE 0x2U
-#define MSPM0G3507_CMD_TYPE_COMMAND_READ_VERIFY 0x3U
+#define MSPM0G3507_CMD_TYPE_BASE                 MSPM0G3507_PERIPH_BASE + 0x1104U
+#define MSPM0G3507_CMD_TYPE_COMMAND_NOOP         0x0U
+#define MSPM0G3507_CMD_TYPE_COMMAND_PROGRAM      0x1U
+#define MSPM0G3507_CMD_TYPE_COMMAND_ERASE        0x2U
+#define MSPM0G3507_CMD_TYPE_COMMAND_READ_VERIFY  0x3U
 #define MSPM0G3507_CMD_TYPE_COMMAND_BLANK_VERIFY 0x6U
 
 #define MSPM0G3507_CMD_TYPE_SIZE_1_word (1U << 4U)
 
-#define MSPM0G3507_CMD_CTL MSPM0G3507_PERIPH_BASE + 0x1108U
+#define MSPM0G3507_CMD_CTL             MSPM0G3507_PERIPH_BASE + 0x1108U
 #define MSPM0G3507_CMD_CTL_MAIN_REGION 0x1U
 
-#define MSPM0G3507_CMD_EXEC MSPM0G3507_PERIPH_BASE  + 0x1100U
+#define MSPM0G3507_CMD_EXEC MSPM0G3507_PERIPH_BASE + 0x1100U
 
-#define MSPM0G3507_STAT_CMD_BASE MSPM0G3507_PERIPH_BASE + 0x13D0U
-#define MSPM0G3507_STAT_CMD_CMD_DONE (1U << 0U)
-#define MSPM0G3507_STAT_CMD_CMD_PASS (1U << 1U)
+#define MSPM0G3507_STAT_CMD_BASE            MSPM0G3507_PERIPH_BASE + 0x13D0U
+#define MSPM0G3507_STAT_CMD_CMD_DONE        (1U << 0U)
+#define MSPM0G3507_STAT_CMD_CMD_PASS        (1U << 1U)
 #define MSPM0G3507_STAT_CMD_CMD_IN_PROGRESS (1U << 2U)
 
 #define MSPM0G3507_CMD_ADDR MSPM0G3507_PERIPH_BASE + 0x1120U
@@ -69,8 +69,8 @@
 #define MSPM0G3507_CMD_BYTE_EN_ADDR 0xFU
 
 #define MSPM0G3507_CMD_DATA_BASE MSPM0G3507_PERIPH_BASE + 0x1130U
-#define MSPM0G3507_CMD_DATA_0 MSPM0G3507_CMD_DATA_BASE
-#define MSPM0G3507_CMD_DATA_1 MSPM0G3507_CMD_DATA_0 + 0x4U
+#define MSPM0G3507_CMD_DATA_0    MSPM0G3507_CMD_DATA_BASE
+#define MSPM0G3507_CMD_DATA_1    MSPM0G3507_CMD_DATA_0 + 0x4U
 
 #define CMDWEPROTA MSPM0G3507_PERIPH_BASE + 0x11D0U
 #define CMDWEPROTB MSPM0G3507_PERIPH_BASE + 0x11D4U
@@ -113,8 +113,7 @@ bool mspm0g3507_probe(target_s *const target)
 	const uint32_t devid0 = target_mem_read32(target, 0xE000ED00);
 	DEBUG_WARN("%s: Device ID %" PRIx32 "\n", __func__, devid0);
 
-	if (devid0 != 0x410cc601)
-	{
+	if (devid0 != 0x410cc601) {
 		return false;
 	}
 
@@ -169,22 +168,20 @@ static bool mspM0g3507_flash_erase(target_flash_s *const target_flash, const tar
 		target_mem_write32(target, CMDWEPROTB, sector - 32);
 	}*/
 
-    target_mem_write32(target, CMDWEPROTA, 0);
-    target_mem_write32(target, CMDWEPROTB, 0);
+	target_mem_write32(target, CMDWEPROTA, 0);
+	target_mem_write32(target, CMDWEPROTB, 0);
 
 	target_mem_write32(target, MSPM0G3507_CMD_EXEC, 1);
 
-    uint32_t status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
+	uint32_t status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
 	uint32_t last_status = 0xFFFFFFFF;
 
-	while ((status & MSPM0G3507_STAT_CMD_CMD_DONE) == 0)
-	{
-		if (status != 0 && status != last_status)
-		{
+	while ((status & MSPM0G3507_STAT_CMD_CMD_DONE) == 0) {
+		if (status != 0 && status != last_status) {
 			DEBUG_WARN("Erase status: %" PRIx32 "\n", status);
 			last_status = status;
 		}
-        status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
+		status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
 	}
 	return true;
 }
@@ -196,7 +193,8 @@ static bool mspM0g3507_flash_write(
 	(void)length;
 	target_s *const target = target_flash->t;
 
-	DEBUG_WARN("Writing: 0x%"PRIx32", 0x%"PRIx32", %d, 0x%" PRIx64 "\n", dest, length, dest / 1024, *(const uint64_t*)src);
+	DEBUG_WARN("Writing: 0x%" PRIx32 ", 0x%" PRIx32 ", %d, 0x%" PRIx64 "\n", dest, length, dest / 1024,
+		*(const uint64_t *)src);
 	/*
 	 * The target Flash layer guarantees that we're called with a length that's a complete write size
 	 * and that the source data buffer is filled with the erase byte value so we don't disturb unwritten
@@ -227,25 +225,23 @@ static bool mspM0g3507_flash_write(
 		target_mem_write32(target, CMDWEPROTB, sector - 32);
 	}*/
 
-    target_mem_write32(target, CMDWEPROTA, 0);
-    target_mem_write32(target, CMDWEPROTB, 0);
+	target_mem_write32(target, CMDWEPROTA, 0);
+	target_mem_write32(target, CMDWEPROTB, 0);
 
 	target_mem_write32(target, MSPM0G3507_CMD_DATA_0, read_le4((const uint8_t *)src, 0));
 	target_mem_write32(target, MSPM0G3507_CMD_DATA_1, read_le4((const uint8_t *)src, 4));
 
 	target_mem_write32(target, MSPM0G3507_CMD_EXEC, 1);
 
-    uint32_t status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
+	uint32_t status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
 	uint32_t last_status = 0xFFFFFFFF;
 
-	while ((status & MSPM0G3507_STAT_CMD_CMD_DONE) == 0)
-	{
-		if (status != 0 && status != last_status)
-		{
+	while ((status & MSPM0G3507_STAT_CMD_CMD_DONE) == 0) {
+		if (status != 0 && status != last_status) {
 			//DEBUG_WARN("Write status: %" PRIx32 "\n", status);
 			last_status = status;
 		}
-        status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
+		status = target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE);
 	}
 
 	/*while ((target_mem_read32(target, MSPM0G3507_STAT_CMD_BASE) & MSPM0G3507_STAT_CMD_CMD_DONE) == 0) {
@@ -261,7 +257,7 @@ static bool mspM0g3507_flash_write(
 /* Mass erases the Flash */
 static bool mspM0g3507_mass_erase(target_s *const target)
 {
-return false;
+	return false;
 	/*const mspM0g3507_flash_s *const flash = (mspM0g3507_flash_s *)target->flash;
 	platform_timeout_s timeout;
 	platform_timeout_set(&timeout, 500);
